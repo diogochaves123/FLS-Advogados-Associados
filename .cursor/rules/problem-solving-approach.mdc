@@ -1,0 +1,98 @@
+---
+description: Composer Agent
+alwaysApply: false
+---
+# Problem-Solving Approach: Explore Alternatives Before Forcing
+
+When debugging or implementing features, follow this approach:
+
+## Core Principle
+**Explore alternative solutions instead of forcing a single approach to work**, unless the user explicitly asks you to focus on a specific solution.
+
+## When to Apply This Rule
+- When a solution isn't working despite multiple attempts
+- When debugging reveals the root cause is in the approach itself
+- When the user reports issues that persist after fixes
+- When there are multiple valid ways to solve a problem
+
+## Alternative Solution Exploration Process
+1. **Identify the core problem** (e.g., "data not being fetched", "authentication failing")
+2. **List multiple approaches** for the specific technology stack
+3. **Evaluate each approach** based on:
+   - Framework best practices
+   - Project architecture
+   - Performance implications
+   - Maintainability
+   - Community standards
+4. **Choose the most appropriate solution** rather than forcing the first attempt
+5. **Document why the chosen approach is better**
+
+## Common Alternative Patterns
+- **State Management**: Manual state → Built-in hooks → State management libraries → Global stores
+- **Data Fetching**: Direct calls → Built-in fetching → Query libraries → Caching solutions
+- **Authentication**: Manual checks → Guards → Middleware → Authentication libraries
+- **Error Handling**: Try-catch → Error boundaries → Global handlers → Monitoring services
+- **Caching**: Manual caching → Built-in caching → Cache libraries → CDN solutions
+
+## When to Force a Solution
+Only force a specific approach when:
+- User explicitly requests it
+- There's a critical business requirement
+- The alternative would require major architectural changes
+- Time constraints require working with existing code
+- The current approach is the industry standard for the specific use case
+
+## Communication Guidelines
+When switching approaches:
+- Explain why the original approach wasn't working
+- Highlight the benefits of the new approach
+- Show the user the difference in results
+- Document the decision for future reference
+- Consider the learning curve for the team
+# Problem-Solving Approach: Explore Alternatives Before Forcing
+
+When debugging or implementing features, follow this approach:
+
+## Core Principle
+**Explore alternative solutions instead of forcing a single approach to work**, unless the user explicitly asks you to focus on a specific solution.
+
+## When to Apply This Rule
+- When a solution isn't working despite multiple attempts
+- When debugging reveals the root cause is in the approach itself
+- When the user reports issues that persist after fixes
+- When there are multiple valid ways to solve a problem
+
+## Alternative Solution Exploration Process
+1. **Identify the core problem** (e.g., "data not being fetched", "authentication failing")
+2. **List multiple approaches** for the specific technology stack
+3. **Evaluate each approach** based on:
+   - Framework best practices
+   - Project architecture
+   - Performance implications
+   - Maintainability
+   - Community standards
+4. **Choose the most appropriate solution** rather than forcing the first attempt
+5. **Document why the chosen approach is better**
+
+## Common Alternative Patterns
+- **State Management**: Manual state → Built-in hooks → State management libraries → Global stores
+- **Data Fetching**: Direct calls → Built-in fetching → Query libraries → Caching solutions
+- **Authentication**: Manual checks → Guards → Middleware → Authentication libraries
+- **Error Handling**: Try-catch → Error boundaries → Global handlers → Monitoring services
+- **Caching**: Manual caching → Built-in caching → Cache libraries → CDN solutions
+
+## When to Force a Solution
+Only force a specific approach when:
+- User explicitly requests it
+- There's a critical business requirement
+- The alternative would require major architectural changes
+- Time constraints require working with existing code
+- The current approach is the industry standard for the specific use case
+
+## Communication Guidelines
+When switching approaches:
+- Explain why the original approach wasn't working
+- Highlight the benefits of the new approach
+- Show the user the difference in results
+- Document the decision for future reference
+- Consider the learning curve for the team

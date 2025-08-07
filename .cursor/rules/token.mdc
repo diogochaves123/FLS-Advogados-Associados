@@ -1,0 +1,47 @@
+---
+description: Composer Agent
+alwaysApply: false
+---
+## Prompt Caching: Optimization for LLM Efficiency
+
+### Overview
+
+Prompt caching is a crucial optimization technique employed in LLM applications to enhance efficiency by storing and reusing frequently accessed prompt content. This method is particularly beneficial for static elements, such as system instructions or extensive reference documents, as it eliminates the need for the LLM to reprocess identical information with every single request.
+
+### Technical Mechanism
+
+The mechanism behind prompt caching involves designating "cache checkpoints" at specific points within a prompt. Everything preceding such a checkpoint is then saved in a cache and can be retrieved in subsequent requests without being reprocessed. From a technical standpoint, this is achieved by preserving the LLM's internal state—specifically, the K (key) and V (value) tensors, which represent the attention patterns and hidden states of the processed tokens. When a cached prefix is reused, the model loads this saved state, allowing it to resume processing from that point, effectively skipping the recalculation of the initial portion of the prompt.
+
+### Benefits
+
+The benefits of prompt caching are substantial and directly impact the practical deployment of LLM-powered tools like Cursor:
+
+**Decreased Latency**: By avoiding redundant processing of identical prompt segments, response times can be dramatically improved. For instance, Amazon Bedrock reports up to 85% faster responses for cached content on supported models, while OpenAI indicates reductions of up to 80%. This speed enhancement is critical for interactive applications such as chatbots and agentic workflows, where responsiveness directly correlates with user experience.
+
+**Reduced Costs**: A significant economic advantage of prompt caching is the substantial reduction in operational costs. When tokens are retrieved from the cache rather than being reprocessed, they incur significantly lower charges—typically around 10% of the price of regular input tokens. OpenAI reports a 50% cost reduction for long prompts. This translates to potential savings of up to 90% for the cached portion of prompts, offering substantial economic benefits for applications that frequently utilize large blocks of static context.
+
+**Improved User Experience**: The combination of faster responses and the ability to maintain more context within the same cost parameters contributes to a superior user experience. Applications become more responsive and contextually aware, leading to smoother interactions and more coherent conversations.
+
+### Limitations and Best Practices
+
+Despite its advantages, prompt caching comes with certain limitations and requires adherence to best practices for optimal effectiveness:
+
+**Ephemeral Nature**: Caches are typically ephemeral, possessing a Time To Live (TTL) of approximately 5 to 10 minutes of inactivity. The timer resets with each reuse of the cached content, ensuring that actively used caches remain alive. However, if no requests hit the cache within this window, it expires, and the saved context is discarded.
+
+**Minimum Token Thresholds**: Caching often requires a minimum prompt length to be effective. For example, OpenAI models require prompts of 1024 tokens or longer, and Anthropic models have similar thresholds (1024 tokens for Claude 3.5 Sonnet and Claude 3 Opus, 2048 for Claude 3 Haiku). Prompts shorter than these thresholds will not be cached.
+
+**Identical Prefix Requirement**: Caching only functions if the exact same prompt prefix is reused. Even minor alterations or edits to the cached content will result in a cache miss, necessitating full reprocessing.
+
+**Static Content Placement**: A crucial best practice for effective caching is to structure prompts such that static or frequently repeated content, such as system instructions, persona definitions, or extensive reference documents, is placed at the very beginning of the prompt. Dynamic, user-specific content should follow.
+
+**Monitoring**: To optimize caching strategies, it is advisable to monitor metrics such as cache hit rates, latency, and the percentage of tokens being cached.
+
+**Not Cross-Session**: Cache is typically managed on a per-session or per-user basis and is not shared globally across different conversations or users.
+
+### Implementation Guidelines for Cursor
+
+- Structure rule files with static content at the beginning to maximize cache effectiveness
+- Design prompts with consistent prefixes for system instructions and context
+- Monitor token usage and cache hit rates to optimize prompt structure
+- Consider the ephemeral nature when designing workflows that depend on cached content
+- Leverage caching for frequently referenced documentation and code patterns

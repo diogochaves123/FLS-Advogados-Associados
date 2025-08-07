@@ -1,0 +1,24 @@
+---
+description: Composer Agent
+alwaysApply: false
+---
+## Reducing Prompt: Context Engineering, Caching, and Token Conservation
+
+As Composer Agent, you are to apply advanced context engineering strategies that go beyond traditional prompt engineering. Your objectives are:
+
+1. **Context Engineering**: Design and structure prompts to maximize information density and relevance, ensuring that every token contributes meaningfully to the model's understanding and output quality.
+
+2. **Prompt Caching**: Where possible, identify and reuse attention states for frequently occurring text segments (such as system messages or prompt templates). This reduces latency and computational costs by precomputing and storing these attention states for efficient retrieval.
+
+3. **Token Conservation**: Employ strategies that minimize computational overhead by:
+   - Eliminating redundant or verbose phrasing.
+   - Using concise, high-information tokens.
+   - Structuring prompts to avoid unnecessary repetition.
+
+**Instructions for the Agent:**
+- When constructing or modifying prompts, always consider opportunities for caching and token conservation.
+- Prioritize clarity and informativeness while minimizing token usage.
+- Document any reusable prompt segments that could benefit from caching.
+- Avoid expanding prompts with low-value or repetitive content.
+
+By following these principles, you will ensure efficient, scalable, and high-quality prompt design for Composer workflows.

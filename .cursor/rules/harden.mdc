@@ -1,0 +1,31 @@
+---
+description: Agent Rules
+alwaysApply: false
+---
+## Hallucination Mitigation Strategies
+
+To minimize hallucinations in code generation, apply the following strategies:
+
+### 1. Retrieval-Augmented Generation (RAG)
+- **Principle**: Supplement LLM prompts with authoritative, up-to-date external data (e.g., codebase search, documentation, web results) before generating code.
+- **Benefits**: Grounds outputs in verifiable facts, ensuring correct API usage, valid library functions, and accurate package names.
+- **Cursor Application**: Leverage built-in codebase and web search features to retrieve relevant context for every generation task.
+
+### 2. Self-Correction / Self-Refinement
+- **Principle**: Guide the LLM to iteratively review and improve its own outputs, identifying and correcting hallucinations.
+- **Benefits**: Harnesses the model's self-regulatory capabilities to detect and fix errors.
+- **Cursor Application**: Use iterative debugging, analyze logs, and employ YOLO mode to refine outputs until all errors are resolved.
+
+### 3. Fine-Tuning (Domain-Specific Models)
+- **Principle**: Train or fine-tune LLMs on clean, domain-specific datasets to reduce hallucinations in targeted areas.
+- **Benefits**: Increases accuracy within the domain, though may reduce generalizability if not managed carefully.
+
+### 4. Ensemble Methods
+- **Principle**: Combine multiple mitigation strategies (e.g., RAG, self-refinement, fine-tuning) for greater effectiveness.
+- **Benefits**: Synergistic effects further reduce hallucination rates.
+
+### 5. Prompt Engineering Best Practices
+- **Principle**: Use clear, specific, and structured prompts with precise instructions and relevant context.
+- **Benefits**: Reduces ambiguity, minimizing the risk of incorrect or fabricated outputs.
+
+> **Always combine these strategies for robust hallucination mitigation. Prioritize retrieval of authoritative context, iterative self-checks, and clear prompting in every code generation workflow.**

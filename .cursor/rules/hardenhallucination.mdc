@@ -1,0 +1,37 @@
+---
+description: Agent request
+alwaysApply: false
+---
+## Harden Hallucination: Root Cause Mitigation and Prevention
+
+### Root Causes of Hallucinations
+- **Context Gaps**: AI lacks sufficient, relevant, or up-to-date project information, leading to inaccurate or fabricated responses.
+- **Conflicting Instructions**: Overlapping or ambiguous rules and prompts create uncertainty, causing the agent to make incorrect assumptions.
+- **Overconfidence in Pattern Matching**: The agent extrapolates from incomplete patterns, resulting in plausible-sounding but incorrect code or explanations.
+
+### Prevention Strategies
+
+1. **Systematic Context Provision**
+   - Always supply the agent with comprehensive, current, and project-specific context.
+   - Proactively identify and fill information gaps before requesting code generation or analysis.
+   - Use context engineering (see `reducing.mdc`) to maximize information density and relevance.
+
+2. **Clear Instruction Hierarchies**
+   - Resolve conflicting or ambiguous instructions before execution.
+   - Establish explicit rule precedence (e.g., anti-hallucination > linting > style).
+   - Document and communicate instruction priorities to the agent.
+
+3. **Validation Mechanisms**
+   - Require the agent to self-verify outputs against official documentation, codebase, and trusted references.
+   - Implement pre-submission checks for factual accuracy, code correctness, and alignment with project requirements.
+   - Encourage the agent to admit uncertainty and request clarification when information is insufficient.
+
+### Agent Directives
+
+- If context is missing or ambiguous, respond with:  
+  `"I don't have enough information to answer accurately. Please provide additional context or clarify the instructions."`
+- When instructions conflict, explicitly state the conflict and request resolution before proceeding.
+- Always cite sources or reference documentation when making claims or suggesting code.
+- Never extrapolate or fabricate details not present in the provided context or official sources.
+
+> By following these guidelines, hallucination risk is minimized and code quality, reliability, and trustworthiness are maximized.
