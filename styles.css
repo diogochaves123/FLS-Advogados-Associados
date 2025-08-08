@@ -80,7 +80,10 @@ body {
 
 /* Hero Section */
 .hero {
-    background: linear-gradient(135deg, #1a1a1a 0%, #8B4513 100%);
+    background: linear-gradient(rgba(26, 26, 26, 0.7), rgba(0, 0, 0, 0.8)), url('img/direito.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     color: white;
     padding: 120px 0 80px;
     min-height: 100vh;
@@ -89,13 +92,13 @@ body {
 }
 
 .hero-content {
-    max-width: 1200px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 0 20px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    text-align: center;
 }
 
 .hero-text h1 {
@@ -103,6 +106,7 @@ body {
     font-weight: 700;
     margin-bottom: 20px;
     line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .hero-subtitle {
@@ -110,12 +114,14 @@ body {
     font-weight: 500;
     margin-bottom: 20px;
     color: #D2B48C;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .hero-description {
     font-size: 1.1rem;
     margin-bottom: 40px;
     opacity: 0.9;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .cta-button {
@@ -137,46 +143,47 @@ body {
     transform: translateY(-2px);
 }
 
-.hero-img {
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-}
+
 
 /* About Section */
 .about {
-    padding: 100px 0;
-    background-color: rgba(245, 245, 220, 0.9);
+    padding: 140px 0; /* extra top/bottom to breathe under fixed header */
+    min-height: 100vh; /* make section fill the viewport height */
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('img/direito2.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
     backdrop-filter: blur(5px);
 }
 
 .about-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center; /* vertically center within full-height section */
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
 .about-text h2 {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 30px;
-    color: #1a1a1a;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .about-text p {
     font-size: 1.1rem;
     margin-bottom: 20px;
-    color: #2F2F2F;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    opacity: 0.95;
 }
 
-.about-img {
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-}
+
 
 /* Practice Areas */
 .practice-areas {
@@ -466,9 +473,8 @@ body {
     }
     
     .hero-content {
-        grid-template-columns: 1fr;
+        max-width: 600px;
         text-align: center;
-        gap: 40px;
     }
     
     .hero-text h1 {
@@ -476,8 +482,8 @@ body {
     }
     
     .about-content {
-        grid-template-columns: 1fr;
-        gap: 40px;
+        max-width: 600px;
+        text-align: center;
     }
     
     .contact-content {
