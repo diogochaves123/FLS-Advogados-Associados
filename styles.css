@@ -144,7 +144,7 @@ body {
 .about {
     padding: 80px 0 0 0; /* add top padding to account for fixed header */
     min-height: 100vh; /* make section fill the viewport height */
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('img/direito2.png');
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('img/direito22.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -179,8 +179,13 @@ body {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 30px;
-    color: white;
+    color: #D2B48C;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.about-text h2.about-title {
+    color: #8B4513;
+    text-shadow: 2px 2px 4px rgba(139, 69, 19, 0.3);
 }
 
 .about-text p {
@@ -189,6 +194,102 @@ body {
     color: white;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
     opacity: 0.95;
+}
+
+.about-image-section {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.about-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    margin-bottom: 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about-image:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+}
+
+.impactful-phrase {
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.1) 0%, rgba(210, 180, 140, 0.1) 100%);
+    padding: 30px;
+    border-radius: 15px;
+    border: 2px solid rgba(139, 69, 19, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.impactful-phrase h3 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #D2B48C;
+    margin-bottom: 15px;
+    font-style: italic;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.impactful-phrase p {
+    font-size: 18px;
+    color: #ffffff;
+    line-height: 1.6;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* New Image and Impactful Phrase Section */
+.about-image-section-main {
+    padding: 100px 0;
+    min-height: 60vh;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('img/direito33.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    border-top: 1px solid #8B4513;
+    border-bottom: 1px solid #8B4513;
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+}
+
+.about-image-content {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+
+
+.impactful-phrase-main {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(26, 26, 26, 0.8) 100%);
+    padding: 40px;
+    border-radius: 20px;
+    border: 3px solid rgba(139, 69, 19, 0.6);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+}
+
+.impactful-phrase-main h3 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #D2B48C;
+    margin-bottom: 20px;
+    font-style: italic;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    line-height: 1.3;
+}
+
+.impactful-phrase-main p {
+    font-size: 20px;
+    color: #ffffff;
+    line-height: 1.6;
+    margin: 0;
+    font-weight: 500;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 
 
@@ -210,9 +311,63 @@ body {
 }
 
 .areas-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-areas: 
+        "card1 card2 card3"
+        "card4 card5 card6" !important;
     gap: 30px;
+    justify-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Ensure all cards are properly positioned */
+.areas-grid .area-card:nth-child(4) {
+    grid-area: card4 !important;
+}
+
+.areas-grid .area-card:nth-child(5) {
+    grid-area: card5 !important;
+}
+
+.areas-grid .area-card:nth-child(6) {
+    grid-area: card6 !important;
+}
+
+/* For medium screens, create a 3-3 layout */
+@media (min-width: 768px) and (max-width: 1199px) {
+    .areas-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-areas: 
+            "card1 card2 card3"
+            "card4 card5 card6" !important;
+        justify-items: center;
+    }
+    
+    .area-card:nth-child(1) { grid-area: card1 !important; }
+    .area-card:nth-child(2) { grid-area: card2 !important; }
+    .area-card:nth-child(3) { grid-area: card3 !important; }
+    .area-card:nth-child(4) { grid-area: card4 !important; }
+    .area-card:nth-child(5) { grid-area: card5 !important; }
+    .area-card:nth-child(6) { grid-area: card6 !important; }
+}
+
+/* For larger screens, create a balanced 3-3 layout */
+@media (min-width: 1200px) {
+    .areas-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-areas: 
+            "card1 card2 card3"
+            "card4 card5 card6" !important;
+    }
+    
+    .area-card:nth-child(1) { grid-area: card1 !important; }
+    .area-card:nth-child(2) { grid-area: card2 !important; }
+    .area-card:nth-child(3) { grid-area: card3 !important; }
+    .area-card:nth-child(4) { grid-area: card4 !important; }
+    .area-card:nth-child(5) { grid-area: card5 !important; }
+    .area-card:nth-child(6) { grid-area: card6 !important; }
 }
 
 .area-card {
@@ -224,6 +379,48 @@ body {
     border: 2px solid #8B4513;
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 350px;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Force specific positioning for each card */
+.area-card:nth-child(1) {
+    grid-area: card1 !important;
+}
+
+.area-card:nth-child(2) {
+    grid-area: card2 !important;
+}
+
+.area-card:nth-child(3) {
+    grid-area: card3 !important;
+}
+
+.area-card:nth-child(4) {
+    grid-area: card4 !important;
+}
+
+.area-card:nth-child(5) {
+    grid-area: card5 !important;
+}
+
+/* Additional forcing rules to ensure layout works */
+.practice-areas .areas-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-areas: 
+        "card1 card2 card3"
+        "card4 card5 card6" !important;
+}
+
+/* Ensure cards don't inherit other display properties */
+.practice-areas .area-card {
+    display: flex !important;
+    flex-direction: column !important;
 }
 
 .area-card:hover {
@@ -533,6 +730,26 @@ body {
         text-align: center;
     }
     
+    .about-image-section {
+        margin-top: 35px;
+    }
+    
+    .impactful-phrase h3 {
+        font-size: 24px;
+    }
+    
+    .about-image-section-main {
+        padding: 60px 0;
+    }
+    
+    .impactful-phrase-main h3 {
+        font-size: 28px;
+    }
+    
+    .impactful-phrase-main p {
+        font-size: 18px;
+    }
+    
     .footer-content {
         grid-template-columns: 1fr;
         gap: 30px;
@@ -550,6 +767,19 @@ body {
     
     .areas-grid {
         grid-template-columns: 1fr;
+        grid-template-areas: 
+            "card1"
+            "card2"
+            "card3"
+            "card4"
+            "card5"
+            "card6";
+        justify-items: center;
+    }
+    
+    .area-card {
+        max-width: 100%;
+        min-height: auto;
     }
 }
 
@@ -571,6 +801,46 @@ body {
     .team h2,
     .contact-info h2 {
         font-size: 2rem;
+    }
+    
+    .about-image-section {
+        margin-top: 30px;
+        padding: 0 15px;
+    }
+    
+    .about-image {
+        margin-bottom: 20px;
+    }
+    
+    .impactful-phrase {
+        padding: 20px;
+    }
+    
+    .impactful-phrase h3 {
+        font-size: 22px;
+    }
+    
+    .impactful-phrase p {
+        font-size: 16px;
+    }
+    
+    .about-image-section-main {
+        padding: 40px 0;
+    }
+    
+
+    
+    .impactful-phrase-main {
+        padding: 25px;
+        margin: 0 15px;
+    }
+    
+    .impactful-phrase-main h3 {
+        font-size: 24px;
+    }
+    
+    .impactful-phrase-main p {
+        font-size: 16px;
     }
     
     .team-grid {
@@ -696,6 +966,7 @@ html {
 .animate-on-scroll.stagger-3 { animation-delay: 0.3s; }
 .animate-on-scroll.stagger-4 { animation-delay: 0.4s; }
 .animate-on-scroll.stagger-5 { animation-delay: 0.5s; }
+.animate-on-scroll.stagger-6 { animation-delay: 0.6s; }
 
 /* Garantir que as imagens sejam sempre visíveis */
 img {
