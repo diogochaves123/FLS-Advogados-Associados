@@ -108,60 +108,64 @@
             <h2 class="animate-on-scroll animate-up">Nossa Equipe</h2>
             
             <div class="team-grid">
-                <div class="lawyer-card animate-on-scroll animate-left stagger-1">
+                <div class="lawyer-card animate-on-scroll animate-left stagger-1" onclick="openLawyerPage('natan')">
                     <div class="lawyer-photo">
                         <img src="img/natan.png" alt="Natan Falcão Fiuza" class="lawyer-img">
                     </div>
-                    <div class="lawyer-info">
+                    <div class="lawyer-info-simple">
                         <h3>Natan Falcão Fiuza</h3>
                         <p class="oab">OAB/RS nº 91735</p>
-                        <p class="education">Graduado em Direito pela Universidade de Passo Fundo (2013)</p>
-                        <p class="specialization">Pós-graduando em Direito Civil e Processual Civil</p>
-                        <p class="expertise">Atua com ênfase nas áreas do Direito do Trabalho, Direito Bancário e Direito Civil.</p>
                     </div>
                 </div>
 
-                <div class="lawyer-card animate-on-scroll animate-up stagger-2">
+                <div class="lawyer-card animate-on-scroll animate-up stagger-2" onclick="openLawyerPage('gabriel')">
                     <div class="lawyer-photo">
                         <img src="img/gabriel.png" alt="Gabriel de Vasconcelos Schmitt" class="lawyer-img">
                     </div>
-                    <div class="lawyer-info">
+                    <div class="lawyer-info-simple">
                         <h3>Gabriel de Vasconcelos Schmitt</h3>
                         <p class="oab">OAB/RS nº 94845</p>
-                        <p class="education">Graduado em Direito pela Universidade de Passo Fundo (2012)</p>
-                        <p class="specialization">Pós-graduando em Direito Tributário, Direito de Família e Sucessões</p>
-                        <p class="expertise">Atua nas áreas de Direito Agrário, Direito Contratual, com destaque na seara do Direito de Família e Sucessões.</p>
                     </div>
                 </div>
 
-                <div class="lawyer-card animate-on-scroll animate-right stagger-3">
+                <div class="lawyer-card animate-on-scroll animate-right stagger-3" onclick="openLawyerPage('eduarda')">
                     <div class="lawyer-photo">
                         <img src="img/eduarda.png" alt="Eduarda Vaz de Chaves Schmitt" class="lawyer-img">
                     </div>
-                    <div class="lawyer-info">
+                    <div class="lawyer-info-simple">
                         <h3>Eduarda Vaz de Chaves Schmitt</h3>
                         <p class="oab">OAB/RS nº 99489</p>
-                        <p class="education">Graduada em Direito pela Universidade de Passo Fundo (2014)</p>
-                        <p class="specialization">Pós-Graduada em Direito Previdenciário</p>
-                        <p class="expertise">Com atuação destacada na área de Direito Previdenciário.</p>
                     </div>
                 </div>
 
-                <div class="lawyer-card animate-on-scroll animate-left stagger-4">
+                <div class="lawyer-card animate-on-scroll animate-left stagger-4" onclick="openLawyerPage('flavio')">
                     <div class="lawyer-photo">
                         <img src="img/flavio.png" alt="Flávio Loch" class="lawyer-img">
                     </div>
-                    <div class="lawyer-info">
+                    <div class="lawyer-info-simple">
                         <h3>Flávio Loch</h3>
                         <p class="oab">OAB/RS nº 109.467</p>
-                        <p class="education">Graduado em Administração (2017) e Direito (2016) pela Universidade de Passo Fundo</p>
-                        <p class="specialization">Pós-Graduado em Direito do Trabalho, Civil e Tributário. Mestre em Direito pela Universidade de Passo Fundo.</p>
-                        <p class="expertise">Conta com atuação destacada nas áreas de Direito Civil, Direito Tributário e Empresarial.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Lawyer Profile Modal -->
+    <div id="lawyerModal" class="lawyer-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- Practice Area Modal -->
+    <div id="areaModal" class="lawyer-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="areaModalContent"></div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">

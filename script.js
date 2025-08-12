@@ -129,3 +129,386 @@ function throttle(func, limit) {
 window.addEventListener('scroll', throttle(() => {
     // Any additional scroll-based effects can go here
 }, 16)); // 60fps
+
+// Function to open lawyer pages in new tabs
+function openLawyerPage(lawyerId) {
+    const lawyerData = {
+        'natan': {
+            name: 'Natan Falcão Fiuza',
+            oab: 'OAB/RS nº 91735',
+            photo: 'img/natan.png',
+            education: 'Graduado em Direito pela Universidade de Passo Fundo (2013)',
+            education2: 'Pós-graduando em Direito Civil e Processual Civil',
+            areas: 'Atua com ênfase nas áreas do Direito do Trabalho, Direito Bancário e Direito Civil.',
+            specializations: ['Direito do Trabalho', 'Direito Bancário', 'Direito Civil', 'Direito Processual Civil']
+        },
+        'gabriel': {
+            name: 'Gabriel de Vasconcelos Schmitt',
+            oab: 'OAB/RS nº 94845',
+            photo: 'img/gabriel.png',
+            education: 'Graduado em Direito pela Universidade de Passo Fundo',
+            education2: 'Especialista em Direito Civil e Processual Civil',
+            areas: 'Atua nas áreas do Direito Civil, Direito do Trabalho e Direito Empresarial.',
+            specializations: ['Direito Civil', 'Direito do Trabalho', 'Direito Empresarial', 'Direito Processual Civil']
+        },
+        'eduarda': {
+            name: 'Eduarda Vaz de Chaves Schmitt',
+            oab: 'OAB/RS nº 99489',
+            photo: 'img/eduarda.png',
+            education: 'Graduada em Direito pela Universidade de Passo Fundo',
+            education2: 'Especialista em Direito Previdenciário e Direito do Trabalho',
+            areas: 'Atua com ênfase nas áreas do Direito Previdenciário, Direito do Trabalho e Direito Civil.',
+            specializations: ['Direito Previdenciário', 'Direito do Trabalho', 'Direito Civil', 'Direito Processual Civil']
+        },
+        'flavio': {
+            name: 'Flávio Loch',
+            oab: 'OAB/RS nº 109.467',
+            photo: 'img/flavio.png',
+            education: 'Graduado em Direito pela Universidade de Passo Fundo',
+            education2: 'Especialista em Direito Tributário e Direito Empresarial',
+            areas: 'Atua nas áreas do Direito Tributário, Direito Empresarial e Direito Digital.',
+            specializations: ['Direito Tributário', 'Direito Empresarial', 'Direito Digital', 'Direito Civil']
+        }
+    };
+
+    const lawyer = lawyerData[lawyerId];
+    if (lawyer) {
+        showLawyerModal(lawyer);
+    }
+}
+
+// Function to show lawyer profile modal
+function showLawyerModal(lawyer) {
+    const modal = document.getElementById('lawyerModal');
+    const modalContent = document.getElementById('modalContent');
+    
+    // Create modal content
+    modalContent.innerHTML = `
+        <div class="lawyer-profile-header">
+            <div class="lawyer-profile-photo">
+                <img src="${lawyer.photo}" alt="${lawyer.name}" class="lawyer-profile-img">
+            </div>
+            <div class="lawyer-profile-info">
+                <h1>${lawyer.name}</h1>
+                <p class="oab-profile">${lawyer.oab}</p>
+            </div>
+        </div>
+
+        <div class="lawyer-profile-details">
+            <div class="detail-section">
+                <h2>Formação Acadêmica</h2>
+                <p>${lawyer.education}</p>
+                <p>${lawyer.education2}</p>
+            </div>
+
+            <div class="detail-section">
+                <h2>Áreas de Atuação</h2>
+                <p>${lawyer.areas}</p>
+            </div>
+
+            <div class="detail-section">
+                <h2>Especializações</h2>
+                <ul>
+                    ${lawyer.specializations.map(spec => `<li>${spec}</li>`).join('')}
+                </ul>
+            </div>
+        </div>
+    `;
+    
+    // Show modal with animation
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    
+    // Trigger animation after a brief delay
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 10);
+}
+
+// Function to close lawyer profile modal
+function closeLawyerModal() {
+    const modal = document.getElementById('lawyerModal');
+    
+    // Remove animation class first
+    modal.classList.remove('show');
+    
+    // Wait for animation to complete, then hide modal
+    setTimeout(() => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Restore scrolling
+    }, 400);
+}
+
+// Event listeners for modal
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('lawyerModal');
+    const closeBtn = document.querySelector('#lawyerModal .close-modal');
+    
+    // Close modal when clicking the X button
+    closeBtn.addEventListener('click', closeLawyerModal);
+    
+    // Close modal when clicking outside the modal content
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeLawyerModal();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+            closeLawyerModal();
+        }
+    });
+});
+
+// =====================
+// Practice Areas Modal
+// =====================
+
+const areaDetails = {
+    'Direito Cível': {
+        emoji: '⚖️',
+        description: 'Atuação em conflitos privados com abordagem estratégica, buscando soluções eficazes e seguras.',
+        services: [
+            'Elaboração e revisão de contratos',
+            'Ações de responsabilidade civil (danos materiais e morais)',
+            'Acordos e mediações extrajudiciais',
+            'Inventários, partilhas e testamentos',
+            'Assessoria em locações e despejos'
+        ],
+        cases: [
+            'Cobranças e execuções',
+            'Indenizações por acidentes e fraudes',
+            'Relações de consumo',
+            'Usucapião e posse',
+            'Direito de vizinhança'
+        ],
+        documents: [
+            'Documentos pessoais',
+            'Comprovantes de pagamento e contratos',
+            'Boletins de ocorrência (quando aplicável)',
+            'Correspondências e e-mails relevantes'
+        ],
+        outcomes: [
+            'Acordos rápidos e vantajosos',
+            'Redução de riscos e custos do litígio',
+            'Execução eficiente de decisões'
+        ],
+        topics: ['Contratos', 'Família e Sucessões', 'Responsabilidade Civil', 'Locações', 'Direito do Consumidor']
+    },
+    'Direito do Trabalho': {
+        emoji: '👨‍💼',
+        description: 'Defesa técnica em relações de trabalho, com foco em equilíbrio e conformidade.',
+        services: [
+            'Reclamações trabalhistas e defesas',
+            'Cálculo e discussão de verbas',
+            'Acordos e homologações',
+            'Consultoria para empresas e empregados',
+            'Auditoria de conformidade'
+        ],
+        cases: [
+            'Horas extras e intervalos',
+            'Justa causa e reversão',
+            'Assédio moral/sexual',
+            'Reconhecimento de vínculo',
+            'Acidente de trabalho'
+        ],
+        documents: [
+            'CTPS e contratos',
+            'Holerites e extratos bancários',
+            'Acordos e advertências',
+            'Comprovantes de jornada'
+        ],
+        outcomes: [
+            'Recuperação de verbas devidas',
+            'Redução de passivos trabalhistas',
+            'Ajuste de rotinas em conformidade'
+        ],
+        topics: ['Reclamações', 'Rescisões', 'Horas Extras', 'Negociações', 'Assédio Moral']
+    },
+    'Direito Previdenciário': {
+        emoji: '🏛️',
+        description: 'Orientação e defesa em benefícios do INSS, priorizando celeridade e precisão técnica.',
+        services: [
+            'Concessão e revisão de aposentadorias',
+            'Benefícios por incapacidade',
+            'Pensão por morte e BPC/LOAS',
+            'Planejamento previdenciário',
+            'Ações judiciais contra o INSS'
+        ],
+        cases: [
+            'Tempo especial e conversões',
+            'Perícias médicas',
+            'Acúmulo de benefícios',
+            'Revisões de cálculos'
+        ],
+        documents: [
+            'CNIS e PPP',
+            'Carteiras de trabalho e carnês',
+            'Laudos e atestados médicos',
+            'Comprovantes de atividade especial'
+        ],
+        outcomes: [
+            'Concessão correta do benefício',
+            'Aumento de renda com revisões',
+            'Segurança jurídica no longo prazo'
+        ],
+        topics: ['Aposentadorias', 'Auxílio-Doença', 'BPC/LOAS', 'Pensão por Morte', 'Revisões']
+    },
+    'Direito Tributário': {
+        emoji: '💰',
+        description: 'Estratégias fiscais para empresas e pessoas físicas, com foco em eficiência e defesa.',
+        services: [
+            'Planejamento tributário preventivo',
+            'Defesas administrativas e judiciais',
+            'Recuperação de créditos',
+            'Análise de enquadramento fiscal',
+            'Consultoria contínua'
+        ],
+        cases: [
+            'Autos de infração',
+            'Exclusão do Simples',
+            'ICMS, PIS/COFINS, IR e CSLL',
+            'CNDs e parcelamentos'
+        ],
+        documents: [
+            'Notas fiscais e livros contábeis',
+            'DCTF, SPED e declarações',
+            'Comprovantes de recolhimento',
+            'Contratos societários'
+        ],
+        outcomes: [
+            'Redução de carga tributária',
+            'Regularização fiscal',
+            'Mitigação de riscos e multas'
+        ],
+        topics: ['Planejamento', 'Defesas Fiscais', 'Créditos', 'Compliance Tributário']
+    },
+    'Direito Empresarial': {
+        emoji: '🏢',
+        description: 'Assessoria completa para negócios, estruturando governança e garantindo segurança contratual.',
+        services: [
+            'Constituição e reorganização societária',
+            'Contratos empresariais',
+            'Due diligence e M&A',
+            'Acordo de sócios e governança',
+            'Consultoria contínua'
+        ],
+        cases: [
+            'Conflitos societários',
+            'Inadimplência e recuperação de crédito',
+            'Responsabilidade de administradores',
+            'Propriedade intelectual básica'
+        ],
+        documents: [
+            'Contratos e estatutos',
+            'Atas e livros societários',
+            'Propostas comerciais e aditivos',
+            'Regulamentos internos'
+        ],
+        outcomes: [
+            'Previsibilidade jurídica',
+            'Relações contratuais sólidas',
+            'Redução de litígios'
+        ],
+        topics: ['Constituição', 'Contratos', 'Societário', 'M&A', 'Compliance']
+    },
+    'Direito Digital': {
+        emoji: '⚡',
+        description: 'Proteção de dados e tecnologia com foco em LGPD, contratos e segurança da informação.',
+        services: [
+            'Adequação à LGPD',
+            'Políticas de privacidade e termos',
+            'Contratos de tecnologia e software',
+            'Resposta a incidentes e compliance',
+            'Assessoria em e-commerce'
+        ],
+        cases: [
+            'Vazamento de dados',
+            'Exercício de direitos do titular',
+            'Disputas de software e SaaS',
+            'Provas digitais'
+        ],
+        documents: [
+            'Mapeamento de dados (RoPA)',
+            'Acordos de processamento (DPA)',
+            'Relatórios de impacto (DPIA)',
+            'Logs e evidências'
+        ],
+        outcomes: [
+            'Conformidade sustentável',
+            'Redução de riscos de incidentes',
+            'Confiança do usuário e do mercado'
+        ],
+        topics: ['LGPD', 'Proteção de Dados', 'Contratos Tecnológicos', 'Segurança da Informação', 'Litígios de Tecnologia']
+    }
+};
+
+function buildAreaModalContent(title) {
+    const data = areaDetails[title];
+    if (!data) return '';
+    const chips = (data.topics || []).map(t => `<span class="chip">${t}</span>`).join('');
+    const makeList = (items) => `<ul class="section-list">${(items||[]).map(i => `<li>${i}</li>`).join('')}</ul>`;
+    const sections = `
+        ${data.services ? `<div class="section-card"><h3>🛠️ Principais serviços</h3>${makeList(data.services)}</div>` : ''}
+        ${data.cases ? `<div class="section-card"><h3>📂 Casos comuns</h3>${makeList(data.cases)}</div>` : ''}
+        ${data.documents ? `<div class="section-card"><h3>📄 Documentos úteis</h3>${makeList(data.documents)}</div>` : ''}
+        ${data.outcomes ? `<div class="section-card"><h3>✅ Resultados que buscamos</h3>${makeList(data.outcomes)}</div>` : ''}
+    `;
+    return `
+        <div class="area-header">
+            <div class="area-emoji">${data.emoji}</div>
+            <div>
+                <h1>${title}</h1>
+                <p class="area-subtitle">${data.description}</p>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="area-sections">${sections}</div>
+        <div class="section-card" style="margin-top:16px;">
+            <h3>🔖 Tópicos relacionados</h3>
+            ${chips}
+        </div>
+        <div class="area-cta">
+            <a class="button" href="#contato">Fale conosco</a>
+        </div>
+    `;
+}
+
+function showAreaModal(title) {
+    const modal = document.getElementById('areaModal');
+    const content = document.getElementById('areaModalContent');
+    content.innerHTML = buildAreaModalContent(title);
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function closeAreaModal() {
+    const modal = document.getElementById('areaModal');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }, 400);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Make area cards clickable to open modal
+    document.querySelectorAll('.area-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const title = card.querySelector('h3')?.textContent?.trim();
+            if (title) showAreaModal(title);
+        });
+    });
+
+    // Close interactions for area modal
+    const areaModal = document.getElementById('areaModal');
+    const closeButtons = areaModal.querySelectorAll('.close-modal');
+    closeButtons.forEach(btn => btn.addEventListener('click', closeAreaModal));
+    areaModal.addEventListener('click', (e) => { if (e.target === areaModal) closeAreaModal(); });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && areaModal.style.display === 'block') closeAreaModal();
+    });
+});
