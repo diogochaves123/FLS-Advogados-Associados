@@ -398,6 +398,7 @@ body {
 .area-icon {
     font-size: 3rem;
     margin-bottom: 20px;
+    color: #D2B48C;
 }
 
 .area-card h3 {
@@ -631,6 +632,16 @@ body {
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
+}
+
+/* Adjust object position for specific photos to avoid cutting the forehead */
+.lawyer-photo img[alt="Natan Falcão Fiuza"] {
+    object-position: center 20%;
+}
+
+/* Slightly higher framing just for Flávio */
+.lawyer-photo img[alt="Flávio Loch"] {
+    object-position: center 24%;
 }
 
 .lawyer-card:hover .lawyer-img {
