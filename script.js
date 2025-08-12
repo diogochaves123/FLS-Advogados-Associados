@@ -512,3 +512,90 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Escape' && areaModal.style.display === 'block') closeAreaModal();
     });
 });
+
+// =====================
+// STJ RSS News Feed
+// =====================
+
+(function setupStjNews() {
+    const container = document.getElementById('news-list');
+    if (!container) return;
+
+    const RSS_URL = 'https://res.stj.jus.br/hrestp-c-portalp/RSS.xml';
+
+    function parsePubDate(text) {
+        const d = new Date(text);
+        if (Number.isNaN(d.getTime())) return '';
+        return d.toLocaleDateString('pt-BR', { year: 'numeric', month: 'short', day: '2-digit' });
+    }
+
+    function renderItems(items) {
+        if (!items || items.length === 0) {
+            container.innerHTML = '<div class="news-skeleton">Sem notícias no momento.</div>';
+            return;
+        }
+        const limited = items.slice(0, 9);
+        container.innerHTML = limited.map(item => {
+            const title = item.title || 'Notícia';
+            const description = (item.description || '').replace(/<[^>]+>/g, '').slice(0, 180) + '…';
+            const link = item.link || 'https://www.stj.jus.br';
+            const pubDate = parsePubDate(item.pubDate);
+            return `
+                <article class="news-card">
+                    <h3>${title}</h3>
+                    <div class="news-divider"></div>
+                    ${description ? `<p>${description}</p>` : ''}
+                    ${pubDate ? `<span class="news-meta">${pubDate}</span>` : ''}
+                    <a class="news-link" href="${link}" target="_blank" rel="noopener">Ler no STJ</a>
+                </article>
+            `;
+        }).join('');
+    }
+
+    async function fetchViaCORSProxy() {
+        // Public, no-auth CORS proxy for simple demos. For production, consider a server-side proxy.
+        const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(RSS_URL);
+        const res = await fetch(proxy, { cache: 'no-store' });
+        if (!res.ok) throw new Error('Proxy request failed');
+        return res.text();
+    }
+
+    async function fetchDirect() {
+        const res = await fetch(RSS_URL, { cache: 'no-store' });
+        if (!res.ok) throw new Error('Direct request failed');
+        return res.text();
+    }
+
+    function parseRSS(xmlString) {
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(xmlString, 'application/xml');
+        const items = Array.from(xml.querySelectorAll('item')).map(it => ({
+            title: it.querySelector('title')?.textContent?.trim(),
+            link: it.querySelector('link')?.textContent?.trim(),
+            description: it.querySelector('description')?.textContent?.trim(),
+            pubDate: it.querySelector('pubDate')?.textContent?.trim()
+        }));
+        return items;
+    }
+
+    async function loadNews() {
+        try {
+            // Try direct first; if blocked by CORS, fallback to proxy
+            let xmlText;
+            try {
+                xmlText = await fetchDirect();
+            } catch (_e) {
+                xmlText = await fetchViaCORSProxy();
+            }
+            const items = parseRSS(xmlText);
+            renderItems(items);
+        } catch (err) {
+            console.error('Falha ao carregar RSS do STJ:', err);
+            container.innerHTML = '<div class="news-skeleton">Não foi possível carregar as notícias agora. Tente novamente mais tarde.</div>';
+        }
+    }
+
+    // Initial load and periodic refresh every 30 minutes
+    loadNews();
+    setInterval(loadNews, 30 * 60 * 1000);
+})();
