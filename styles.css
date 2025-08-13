@@ -85,6 +85,27 @@ body {
     gap: 40px;
 }
 
+/* Mobile nav toggle (hidden on desktop) */
+.nav-toggle {
+    display: none;
+    background: transparent;
+    border: 0;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.nav-toggle-bar {
+    width: 24px;
+    height: 2px;
+    background: #ffffff;
+    border-radius: 2px;
+}
+
 .nav-menu a {
     text-decoration: none;
     color: #ffffff;
@@ -566,6 +587,44 @@ body {
 }
 
 @media (max-width: 768px) {
+    /* Mobile menu behavior */
+    .nav-toggle { display: flex; }
+    .nav-menu {
+        position: absolute;
+        top: 80px;
+        right: 20px;
+        left: 20px;
+        display: none;
+        flex-direction: column;
+        gap: 16px;
+        background: rgba(26, 26, 26, 0.98);
+        border: 1px solid #8B4513;
+        border-radius: 10px;
+        padding: 16px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.4);
+        z-index: 1001;
+    }
+    .nav-menu.nav-open { display: flex; }
+    .nav-menu a { font-size: 18px; }
+
+    /* Avoid iOS issues with fixed backgrounds */
+    .hero,
+    .about,
+    .about-image-section-main {
+        background-attachment: scroll;
+    }
+
+    /* Use small viewport units for better mobile vh behavior */
+    .hero,
+    .about { min-height: 100svh; }
+
+    /* Lighten heavy effects for performance */
+    .header { backdrop-filter: blur(6px); }
+    .area-card,
+    .lawyer-card { box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+
+    /* Anchor offset so content isn't hidden under fixed header */
+    section[id] { scroll-margin-top: 90px; }
     #areaModalContent { padding: 60px 30px 40px 30px; }
     #areaModalContent h1 { font-size: 1.8rem; }
     #areaModalContent .area-emoji { font-size: 2.2rem; }
@@ -1033,6 +1092,8 @@ body {
     .container {
         padding: 0 15px;
     }
+    /* Smaller header offset */
+    section[id] { scroll-margin-top: 80px; }
     
     .hero-text h1 {
         font-size: 2rem;

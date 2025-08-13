@@ -111,6 +111,25 @@ window.addEventListener('load', () => {
     });
 });
 
+// Mobile navigation toggle
+document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.querySelector('.nav-toggle');
+    const menu = document.getElementById('primary-menu');
+    if (toggle && menu) {
+        toggle.addEventListener('click', () => {
+            const isOpen = menu.classList.toggle('nav-open');
+            toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+        // Close menu when clicking a link
+        menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+            if (menu.classList.contains('nav-open')) {
+                menu.classList.remove('nav-open');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        }));
+    }
+});
+
 // Performance optimization: Throttle scroll events
 function throttle(func, limit) {
     let inThrottle;
