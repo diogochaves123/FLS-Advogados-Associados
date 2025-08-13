@@ -17,7 +17,7 @@
           <span>FLS Advogados Associados</span>
         </div>
         <nav>
-          <a class="news-link" href="index.html">Voltar ao site</a>
+          <a id="back-link" class="news-link" href="index.html">Voltar ao site</a>
         </nav>
       </header>
 
@@ -111,6 +111,18 @@
   <script>
     // Reaproveita a animação simples de entrada
     window.addEventListener('load', () => document.body.classList.add('loaded'));
+
+    // Atualiza o texto do botão de retorno apenas no mobile
+    (function() {
+      const backLink = document.getElementById('back-link');
+      if (!backLink) return;
+      const mq = window.matchMedia('(max-width: 768px)');
+      const updateBackText = (e) => {
+        backLink.textContent = e.matches ? 'Voltar' : 'Voltar ao site';
+      };
+      updateBackText(mq);
+      mq.addEventListener('change', updateBackText);
+    })();
   </script>
 </body>
 </html>
