@@ -176,17 +176,17 @@ function openLawyerPage(lawyerId) {
             photo: 'img/eduarda.png',
             education: 'Graduada em Direito pela Universidade de Passo Fundo',
             education2: 'Especialista em Direito Previdenciário e Direito do Trabalho',
-            areas: 'Atua com ênfase nas áreas do Direito Previdenciário, Direito do Trabalho e Direito Civil.',
-            specializations: ['Direito Previdenciário', 'Direito do Trabalho', 'Direito Civil', 'Direito Processual Civil']
+            areas: 'Atua com ênfase na área do Direito Previdenciário.',
+            specializations: ['Direito Previdenciário', 'Direito do Trabalho']
         },
         'flavio': {
             name: 'Flávio Loch',
             oab: 'OAB/RS nº 109.467',
             photo: 'img/flavio.png',
-            education: 'Graduado em Direito pela Universidade de Passo Fundo',
-            education2: 'Especialista em Direito Tributário e Direito Empresarial',
-            areas: 'Atua nas áreas do Direito Tributário, Direito Empresarial e Direito Digital.',
-            specializations: ['Direito Tributário', 'Direito Empresarial', 'Direito Digital', 'Direito Civil']
+            education: 'Graduado em Administração e em Direito pela Universidade de Passo Fundo (UPF)',
+            education2: 'Especialista em Direito Civil (UPF); Especialista em Direito Tributário (UPF); Especialista em Direito do Trabalho (Rede Futura de Ensino); Mestre em Direito (UPF)',
+            areas: 'Atua nas áreas do Direito Tributário, Direito Empresarial, Direito Civil e Direito do Trabalho.',
+            specializations: ['Direito Civil', 'Direito Tributário', 'Direito do Trabalho']
         }
     };
 
@@ -200,6 +200,13 @@ function openLawyerPage(lawyerId) {
 function showLawyerModal(lawyer) {
     const modal = document.getElementById('lawyerModal');
     const modalContent = document.getElementById('modalContent');
+    
+    // Normalize education lines so that multiple specializations can be shown one per line
+    const educationExtras = Array.isArray(lawyer.education2)
+        ? lawyer.education2
+        : (typeof lawyer.education2 === 'string'
+            ? lawyer.education2.split(';').map(s => s.trim()).filter(Boolean)
+            : []);
     
     // Create modal content
     modalContent.innerHTML = `
@@ -217,7 +224,7 @@ function showLawyerModal(lawyer) {
             <div class="detail-section">
                 <h2>Formação Acadêmica</h2>
                 <p>${lawyer.education}</p>
-                <p>${lawyer.education2}</p>
+                ${educationExtras.map(line => `<p>${line}</p>`).join('')}
             </div>
 
             <div class="detail-section">
