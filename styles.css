@@ -629,6 +629,15 @@ body {
     #areaModalContent h1 { font-size: 1.8rem; }
     #areaModalContent .area-emoji { font-size: 2.2rem; }
     #areaModalContent .area-sections { grid-template-columns: 1fr; }
+
+	    /* Force telephone links (auto-detected on mobile) to be white only on mobile */
+	    a[href^="tel"],
+	    a[href^="tel"]:visited,
+	    a[href^="tel"]:hover,
+	    a[href^="tel"]:active {
+	        color: #ffffff !important;
+	        text-decoration: none;
+	    }
 }
 
 /* Team Section */
