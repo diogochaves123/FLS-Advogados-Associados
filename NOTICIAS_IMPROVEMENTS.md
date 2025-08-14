@@ -109,10 +109,10 @@ headers: {
 }
 ```
 
-### **9. Monitoramento de Performance (NOVO)** 📊
-- **Nova Funcionalidade**: Rastreamento de performance em tempo real
-- **Benefícios**: Visibilidade imediata dos tempos de carregamento e taxas de sucesso dos proxies
-- **Uso**: Display de performance aparece no canto superior direito
+### **9. Monitoramento de Performance (REMOVIDO)** 📊
+- **Funcionalidade Removida**: Display de performance foi removido para uma experiência mais limpa
+- **Benefícios**: Interface mais limpa sem elementos de monitoramento técnico
+- **Uso**: Performance ainda é otimizada com testes paralelos de proxy e timeouts reduzidos
 
 ## 📱 Melhorias Esperadas
 
@@ -129,20 +129,14 @@ headers: {
 ## 🔧 Como Monitorar Performance
 
 ### **Display em Tempo Real**:
-- Monitor de performance aparece no canto superior direito
-- Mostra tempos de carregamento atuais e médias
-- Rastreia taxas de sucesso dos proxies
+- Monitor de performance foi removido para uma interface mais limpa
+- Performance ainda é otimizada com testes paralelos de proxy
+- Timeouts reduzidos garantem carregamento mais rápido
 
 ### **Comandos do Console**:
 ```javascript
-// Obter relatório detalhado de performance
-testNewsPerformance()
-
-// Resetar métricas de performance
-resetPerformanceMetrics()
-
-// Ver métricas em tempo real
-window.newsPerformanceMonitor.getPerformanceReport()
+// Monitoramento de performance foi removido para uma experiência mais limpa
+// Performance ainda é otimizada com testes paralelos de proxy e timeouts reduzidos
 ```
 
 ## 🚀 Otimizações Futuras
@@ -203,4 +197,4 @@ window.newsPerformanceMonitor.getPerformanceReport()
 
 Com essas otimizações, as notícias do TRT devem agora carregar em **3-8 segundos** em vez de **20+ segundos**, representando uma **melhoria de performance de 60-85%**. O teste paralelo de proxies garante que o proxy mais rápido disponível seja usado, enquanto os timeouts reduzidos e a lógica de retry minimizam atrasos de conexões lentas ou falhadas.
 
-**Monitore o display de performance** para acompanhar melhorias e identificar quaisquer gargalos restantes para otimização adicional.
+**Monitore os logs do console** para acompanhar melhorias e identificar quaisquer gargalos restantes para otimização adicional.

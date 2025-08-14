@@ -93,14 +93,9 @@ const PROXY_URLS = [
 
 ### **Console Commands**:
 ```javascript
-// Get detailed performance report
-testNewsPerformance()
-
-// Reset performance metrics
-resetPerformanceMetrics()
-
-// View real-time metrics
-window.newsPerformanceMonitor.getPerformanceReport()
+// Performance monitoring has been removed for cleaner user experience
+// News loading performance is still optimized with parallel proxy testing
+// and reduced timeouts for faster loading times
 ```
 
 ### **Console Logs**:
@@ -134,11 +129,9 @@ window.newsPerformanceMonitor.getPerformanceReport()
 
 ### **Monitoring Commands**:
 ```javascript
-// Check current performance
-const report = testNewsPerformance();
-console.log('Average TRT load time:', report.trt.avgLoadTime);
-console.log('Proxy success rates:', report.trt.proxySuccess);
-console.log('Recommendations:', report.recommendations);
+// Performance monitoring has been removed for cleaner user experience
+// News loading performance is still optimized with parallel proxy testing
+// and reduced timeouts for faster loading times
 ```
 
 ## 🎯 Success Criteria
@@ -186,4 +179,5 @@ console.log('Recommendations:', report.recommendations);
 
 With these optimizations, TRT news should now load in **3-8 seconds** instead of **20+ seconds**, representing a **60-85% performance improvement**. The parallel proxy testing ensures that the fastest available proxy is used, while the reduced timeouts and retry logic minimize delays from slow or failed connections.
 
-**Monitor the performance display** to track improvements and identify any remaining bottlenecks for further optimization.
+**Monitor the console logs** to track improvements and identify any remaining bottlenecks for further optimization.
+```
