@@ -548,6 +548,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!container) return;
 
     const RSS_URL = 'https://res.stj.jus.br/hrestp-c-portalp/RSS.xml';
+    
+    // Multiple CORS proxies for redundancy - optimized for speed
+    const PROXY_URLS = [
+        'https://api.allorigins.win/raw?url=',
+        'https://cors-anywhere.herokuapp.com/',
+        'https://thingproxy.freeboard.io/fetch/',
+        'https://cors.bridged.cc/',
+        'https://api.codetabs.com/v1/proxy?quest='
+    ];
+    
+    let currentProxyIndex = 0;
+    let retryCount = 0;
+    const MAX_RETRIES = 2; // Reduced from 3 to 2
+    const REQUEST_TIMEOUT = 8000; // Reduced from 15s to 8s for faster failure detection
+    const PARALLEL_TIMEOUT = 10000; // Overall timeout for parallel requests
 
     function parsePubDate(text) {
         const d = new Date(text);
@@ -581,18 +596,151 @@ document.addEventListener('DOMContentLoaded', () => {
         setupCarouselControls();
     }
 
-    async function fetchViaCORSProxy() {
-        // Public, no-auth CORS proxy for simple demos. For production, consider a server-side proxy.
-        const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(RSS_URL);
-        const res = await fetch(proxy, { cache: 'no-store' });
-        if (!res.ok) throw new Error('Proxy request failed');
-        return res.text();
+    function showLoadingState() {
+        container.innerHTML = `
+            <div class="news-skeleton">🔄 Carregando notícias do STJ...</div>
+            <div class="news-skeleton">⏳ Aguarde um momento...</div>
+            <div class="news-skeleton">⚖️ Conectando ao Superior Tribunal...</div>
+        `;
+    }
+
+    function showErrorState(error, isRetry = false) {
+        const retryButton = isRetry ? 
+            '<button onclick="window.location.reload()" style="background: #8B4513; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 10px;">Tentar novamente</button>' : '';
+        
+        container.innerHTML = `
+            <div class="news-skeleton" style="text-align: center; padding: 20px;">
+                <div style="color: #D2B48C; margin-bottom: 10px;">⚠️ Erro ao carregar notícias</div>
+                <div style="font-size: 0.9em; opacity: 0.8; margin-bottom: 15px;">
+                    ${error || 'Não foi possível conectar ao STJ'}
+                </div>
+                ${retryButton}
+            </div>
+        `;
+    }
+
+    async function fetchWithTimeout(url, options = {}, timeout = REQUEST_TIMEOUT) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        
+        try {
+            const response = await fetch(url, {
+                ...options,
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            return response;
+        } catch (error) {
+            clearTimeout(timeoutId);
+            if (error.name === 'AbortError') {
+                throw new Error('Timeout: A requisição demorou muito para responder');
+            }
+            throw error;
+        }
+    }
+
+    // NEW: Parallel proxy testing for faster response
+    async function fetchViaCORSProxyParallel() {
+        const startTime = performance.now();
+        const promises = PROXY_URLS.map(async (proxyUrl, index) => {
+            try {
+                const fullUrl = proxyUrl + encodeURIComponent(RSS_URL);
+                console.log(`STJ: Testando proxy ${index + 1} em paralelo: ${proxyUrl}`);
+                
+                const response = await fetchWithTimeout(fullUrl, { 
+                    cache: 'no-store',
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                    }
+                }, REQUEST_TIMEOUT);
+                
+                if (!response.ok) {
+                    throw new Error(`Proxy ${index + 1} failed: ${response.status}`);
+                }
+                
+                const xmlText = await response.text();
+                const loadTime = performance.now() - startTime;
+                console.log(`STJ: Proxy ${index + 1} sucesso em ${loadTime.toFixed(0)}ms`);
+                
+                return { xmlText, proxyIndex: index, loadTime };
+            } catch (error) {
+                console.warn(`STJ: Proxy ${index + 1} falhou:`, error.message);
+                throw error;
+            }
+        });
+
+        // Race all proxies with overall timeout
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Timeout: Nenhum proxy respondeu a tempo')), PARALLEL_TIMEOUT);
+        });
+
+        try {
+            const result = await Promise.race([
+                Promise.any(promises), // Use Promise.any to get first successful response
+                timeoutPromise
+            ]);
+            
+            currentProxyIndex = result.proxyIndex;
+            const totalTime = performance.now() - startTime;
+            console.log(`STJ: RSS carregado com sucesso em ${totalTime.toFixed(0)}ms via proxy ${result.proxyIndex + 1}`);
+            
+            return result.xmlText;
+        } catch (error) {
+            console.error('STJ: Todos os proxies falharam em paralelo:', error);
+            throw error;
+        }
+    }
+
+    // Fallback to sequential proxy testing if parallel fails
+    async function fetchViaCORSProxySequential() {
+        const startTime = performance.now();
+        
+        for (let i = 0; i < PROXY_URLS.length; i++) {
+            try {
+                const proxyUrl = PROXY_URLS[i];
+                console.log(`STJ: Tentativa sequencial proxy ${i + 1}: ${proxyUrl}`);
+                
+                const fullUrl = proxyUrl + encodeURIComponent(RSS_URL);
+                const response = await fetchWithTimeout(fullUrl, { 
+                    cache: 'no-store',
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                    }
+                }, REQUEST_TIMEOUT);
+                
+                if (!response.ok) {
+                    throw new Error(`Proxy request failed: ${response.status} ${response.statusText}`);
+                }
+                
+                const xmlText = await response.text();
+                currentProxyIndex = i;
+                const loadTime = performance.now() - startTime;
+                console.log(`STJ: Proxy sequencial ${i + 1} sucesso em ${loadTime.toFixed(0)}ms`);
+                
+                return xmlText;
+            } catch (error) {
+                console.warn(`STJ: Proxy sequencial ${i + 1} falhou:`, error.message);
+                if (i === PROXY_URLS.length - 1) {
+                    throw error;
+                }
+                continue;
+            }
+        }
     }
 
     async function fetchDirect() {
-        const res = await fetch(RSS_URL, { cache: 'no-store' });
-        if (!res.ok) throw new Error('Direct request failed');
-        return res.text();
+        const response = await fetchWithTimeout(RSS_URL, { 
+            cache: 'no-store',
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+        }, REQUEST_TIMEOUT);
+        
+        if (!response.ok) {
+            throw new Error(`Direct request failed: ${response.status} ${response.statusText}`);
+        }
+        
+        return response.text();
     }
 
     function parseRSS(xmlString) {
@@ -608,19 +756,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function loadNews() {
+        const startTime = performance.now();
+        
         try {
-            // Try direct first; if blocked by CORS, fallback to proxy
+            showLoadingState();
+            
+            // Try direct first; if blocked by CORS, fallback to parallel proxy, then sequential
             let xmlText;
             try {
                 xmlText = await fetchDirect();
-            } catch (_e) {
-                xmlText = await fetchViaCORSProxy();
+                console.log(`STJ: RSS carregado diretamente em ${(performance.now() - startTime).toFixed(0)}ms`);
+            } catch (directError) {
+                console.warn('STJ: Fallback para proxy:', directError.message);
+                
+                try {
+                    xmlText = await fetchViaCORSProxyParallel();
+                } catch (parallelError) {
+                    console.warn('STJ: Fallback para método sequencial:', parallelError.message);
+                    xmlText = await fetchViaCORSProxySequential();
+                }
             }
+            
             const items = parseRSS(xmlText);
             renderItems(items);
+            
+            const totalTime = performance.now() - startTime;
+            console.log(`STJ: ✅ Notícias carregadas com sucesso! (${items.length} notícias em ${totalTime.toFixed(0)}ms)`);
+            
+            retryCount = 0; // Reset retry count on success
+            
         } catch (err) {
-            console.error('Falha ao carregar RSS do STJ:', err);
-            container.innerHTML = '<div class="news-skeleton">Não foi possível carregar as notícias agora. Tente novamente mais tarde.</div>';
+            const totalTime = performance.now() - startTime;
+            console.error(`STJ: Falha ao carregar RSS em ${totalTime.toFixed(0)}ms:`, err);
+            
+            // If we have retries left, try again with reduced backoff
+            if (retryCount < MAX_RETRIES) {
+                retryCount++;
+                const delay = Math.pow(1.5, retryCount) * 1000; // Reduced backoff: 1.5s, 2.25s
+                
+                showErrorState(`Tentativa ${retryCount} de ${MAX_RETRIES} falhou. Tentando novamente em ${(delay/1000).toFixed(1)}s...`, true);
+                
+                setTimeout(() => {
+                    loadNews();
+                }, delay);
+            } else {
+                // All retries exhausted, show final error
+                showErrorState('Não foi possível carregar as notícias após várias tentativas. Verifique sua conexão ou tente novamente mais tarde.');
+            }
         }
     }
 
@@ -665,6 +847,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!container) return;
 
     const TRT_URL = 'https://www.trt4.jus.br/portais/trt4/modulos/noticias/Jur%C3%ADdica/0';
+    
+    // Multiple CORS proxies for redundancy - optimized for speed
+    const PROXY_URLS = [
+        'https://api.allorigins.win/raw?url=',
+        'https://cors-anywhere.herokuapp.com/',
+        'https://thingproxy.freeboard.io/fetch/',
+        'https://cors.bridged.cc/',
+        'https://api.codetabs.com/v1/proxy?quest='
+    ];
+    
+    let currentProxyIndex = 0;
+    let retryCount = 0;
+    const MAX_RETRIES = 2; // Reduced from 3 to 2
+    const REQUEST_TIMEOUT = 8000; // Reduced from 15s to 8s for faster failure detection
+    const PARALLEL_TIMEOUT = 10000; // Overall timeout for parallel requests
 
     function parseDate(text) {
         // Extract date from TRT news format (e.g., "13.08.2025")
@@ -703,19 +900,184 @@ document.addEventListener('DOMContentLoaded', () => {
         setupTrtCarouselControls();
     }
 
-    async function fetchTrtNews() {
+    function showLoadingState() {
+        container.innerHTML = `
+            <div class="news-skeleton">🔄 Carregando notícias do TRT...</div>
+            <div class="news-skeleton">⏳ Aguarde um momento...</div>
+            <div class="news-skeleton">📰 Conectando ao tribunal...</div>
+        `;
+    }
+
+    function showErrorState(error, isRetry = false) {
+        const retryButton = isRetry ? 
+            '<button onclick="window.location.reload()" style="background: #8B4513; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 10px;">Tentar novamente</button>' : '';
+        
+        container.innerHTML = `
+            <div class="news-skeleton" style="text-align: center; padding: 20px;">
+                <div style="color: #D2B48C; margin-bottom: 10px;">⚠️ Erro ao carregar notícias</div>
+                <div style="font-size: 0.9em; opacity: 0.8; margin-bottom: 15px;">
+                    ${error || 'Não foi possível conectar ao TRT-RS'}
+                </div>
+                ${retryButton}
+            </div>
+        `;
+    }
+
+    async function fetchWithTimeout(url, options = {}, timeout = REQUEST_TIMEOUT) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        
         try {
-            // Use CORS proxy since TRT doesn't provide RSS feed
-            const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(TRT_URL);
-            const res = await fetch(proxy, { cache: 'no-store' });
-            if (!res.ok) throw new Error('Proxy request failed');
-            const html = await res.text();
+            const response = await fetch(url, {
+                ...options,
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            return response;
+        } catch (error) {
+            clearTimeout(timeoutId);
+            if (error.name === 'AbortError') {
+                throw new Error('Timeout: A requisição demorou muito para responder');
+            }
+            throw error;
+        }
+    }
+
+    // NEW: Parallel proxy testing for faster response
+    async function fetchTrtNewsParallel() {
+        const startTime = performance.now();
+        const promises = PROXY_URLS.map(async (proxyUrl, index) => {
+            try {
+                const fullUrl = proxyUrl + encodeURIComponent(TRT_URL);
+                console.log(`TRT: Testando proxy ${index + 1} em paralelo: ${proxyUrl}`);
+                
+                const response = await fetchWithTimeout(fullUrl, { 
+                    cache: 'no-store',
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                    }
+                }, REQUEST_TIMEOUT);
+                
+                if (!response.ok) {
+                    throw new Error(`Proxy ${index + 1} failed: ${response.status}`);
+                }
+                
+                const html = await response.text();
+                const loadTime = performance.now() - startTime;
+                console.log(`TRT: Proxy ${index + 1} sucesso em ${loadTime.toFixed(0)}ms`);
+                
+                return { html, proxyIndex: index, loadTime };
+            } catch (error) {
+                console.warn(`TRT: Proxy ${index + 1} falhou:`, error.message);
+                throw error;
+            }
+        });
+
+        // Race all proxies with overall timeout
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Timeout: Nenhum proxy respondeu a tempo')), PARALLEL_TIMEOUT);
+        });
+
+        try {
+            const result = await Promise.race([
+                Promise.any(promises), // Use Promise.any to get first successful response
+                timeoutPromise
+            ]);
+            
+            currentProxyIndex = result.proxyIndex;
+            const totalTime = performance.now() - startTime;
+            console.log(`TRT: Notícias carregadas com sucesso em ${totalTime.toFixed(0)}ms via proxy ${result.proxyIndex + 1}`);
+            
+            return result.html;
+        } catch (error) {
+            console.error('TRT: Todos os proxies falharam em paralelo:', error);
+            throw error;
+        }
+    }
+
+    // Fallback to sequential proxy testing if parallel fails
+    async function fetchTrtNewsSequential() {
+        const startTime = performance.now();
+        
+        for (let i = 0; i < PROXY_URLS.length; i++) {
+            try {
+                const proxyUrl = PROXY_URLS[i];
+                console.log(`TRT: Tentativa sequencial proxy ${i + 1}: ${proxyUrl}`);
+                
+                const fullUrl = proxyUrl + encodeURIComponent(TRT_URL);
+                const response = await fetchWithTimeout(fullUrl, { 
+                    cache: 'no-store',
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                    }
+                }, REQUEST_TIMEOUT);
+                
+                if (!response.ok) {
+                    throw new Error(`Proxy request failed: ${response.status} ${response.statusText}`);
+                }
+                
+                const html = await response.text();
+                currentProxyIndex = i;
+                const loadTime = performance.now() - startTime;
+                console.log(`TRT: Proxy sequencial ${i + 1} sucesso em ${loadTime.toFixed(0)}ms`);
+                
+                return html;
+            } catch (error) {
+                console.warn(`TRT: Proxy sequencial ${i + 1} falhou:`, error.message);
+                if (i === PROXY_URLS.length - 1) {
+                    throw error;
+                }
+                continue;
+            }
+        }
+    }
+
+    async function fetchTrtNews() {
+        const startTime = performance.now();
+        
+        try {
+            showLoadingState();
+            
+            let html = null;
+            
+            // Try parallel first for speed, fallback to sequential if needed
+            try {
+                html = await fetchTrtNewsParallel();
+            } catch (parallelError) {
+                console.warn('TRT: Fallback para método sequencial:', parallelError.message);
+                html = await fetchTrtNewsSequential();
+            }
+            
+            if (!html) {
+                throw new Error('Falha ao obter conteúdo HTML');
+            }
             
             const items = parseTrtHtml(html);
             renderTrtItems(items);
+            
+            const totalTime = performance.now() - startTime;
+            console.log(`TRT: ✅ Notícias carregadas com sucesso! (${items.length} notícias em ${totalTime.toFixed(0)}ms)`);
+            
+            retryCount = 0; // Reset retry count on success
+            
         } catch (err) {
-            console.error('Falha ao carregar notícias do TRT:', err);
-            container.innerHTML = '<div class="news-skeleton">Não foi possível carregar as notícias agora. Tente novamente mais tarde.</div>';
+            const totalTime = performance.now() - startTime;
+            console.error(`TRT: Falha ao carregar notícias em ${totalTime.toFixed(0)}ms:`, err);
+            
+            // If we have retries left, try again with reduced backoff
+            if (retryCount < MAX_RETRIES) {
+                retryCount++;
+                const delay = Math.pow(1.5, retryCount) * 1000; // Reduced backoff: 1.5s, 2.25s
+                
+                showErrorState(`Tentativa ${retryCount} de ${MAX_RETRIES} falhou. Tentando novamente em ${(delay/1000).toFixed(1)}s...`, true);
+                
+                setTimeout(() => {
+                    fetchTrtNews();
+                }, delay);
+            } else {
+                // All retries exhausted, show final error
+                showErrorState('Não foi possível carregar as notícias após várias tentativas. Verifique sua conexão ou tente novamente mais tarde.');
+            }
         }
     }
 
