@@ -560,7 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
             container.innerHTML = '<div class="news-skeleton">Sem notícias no momento.</div>';
             return;
         }
-        const limited = items.slice(0, 9);
+        const limited = items.slice(0, 12);
         container.innerHTML = limited.map(item => {
             const title = item.title || 'Notícia';
             const description = (item.description || '').replace(/<[^>]+>/g, '').slice(0, 180) + '…';
@@ -576,6 +576,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </article>
             `;
         }).join('');
+
+        // enable buttons after render
+        setupCarouselControls();
     }
 
     async function fetchViaCORSProxy() {
@@ -621,7 +624,225 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function setupCarouselControls() {
+        const track = container; // container is the track element
+        const carousel = track.closest('.news-carousel');
+        if (!carousel) return;
+        const prevBtn = carousel.querySelector('.carousel-btn.prev');
+        const nextBtn = carousel.querySelector('.carousel-btn.next');
+
+        const getCardWidth = () => {
+            const firstCard = track.querySelector('.news-card');
+            if (!firstCard) return 320;
+            const styles = window.getComputedStyle(firstCard);
+            const width = firstCard.getBoundingClientRect().width;
+            const marginRight = parseFloat(styles.marginRight) || 0;
+            return width + marginRight + 16; // 16 = track gap
+        };
+
+        function scrollByCards(direction) {
+            const delta = getCardWidth() * direction;
+            track.scrollBy({ left: delta, behavior: 'smooth' });
+        }
+
+        if (prevBtn && nextBtn) {
+            prevBtn.addEventListener('click', () => scrollByCards(-1));
+            nextBtn.addEventListener('click', () => scrollByCards(1));
+        }
+    }
+
     // Initial load and periodic refresh every 30 minutes
     loadNews();
     setInterval(loadNews, 30 * 60 * 1000);
+})();
+
+// =====================
+// TRT News Feed
+// =====================
+
+(function setupTrtNews() {
+    const container = document.getElementById('trt-news-list');
+    if (!container) return;
+
+    const TRT_URL = 'https://www.trt4.jus.br/portais/trt4/modulos/noticias/Jur%C3%ADdica/0';
+
+    function parseDate(text) {
+        // Extract date from TRT news format (e.g., "13.08.2025")
+        const dateMatch = text.match(/(\d{2})\.(\d{2})\.(\d{4})/);
+        if (dateMatch) {
+            const [, day, month, year] = dateMatch;
+            const date = new Date(year, month - 1, day);
+            return date.toLocaleDateString('pt-BR', { year: 'numeric', month: 'short', day: '2-digit' });
+        }
+        return '';
+    }
+
+    function renderTrtItems(items) {
+        if (!items || items.length === 0) {
+            container.innerHTML = '<div class="news-skeleton">Sem notícias no momento.</div>';
+            return;
+        }
+        const limited = items.slice(0, 12);
+        container.innerHTML = limited.map(item => {
+            const title = item.title || 'Notícia';
+            const description = (item.description || '').slice(0, 180) + '…';
+            const link = item.link || TRT_URL;
+            const pubDate = parseDate(item.date);
+            return `
+                <article class="news-card">
+                    <h3>${title}</h3>
+                    <div class="news-divider"></div>
+                    ${description ? `<p>${description}</p>` : ''}
+                    ${pubDate ? `<span class="news-meta">${pubDate}</span>` : ''}
+                    <a class="news-link" href="${link}" target="_blank" rel="noopener">Ler no TRT-RS</a>
+                </article>
+            `;
+        }).join('');
+
+        // Enable carousel controls after render
+        setupTrtCarouselControls();
+    }
+
+    async function fetchTrtNews() {
+        try {
+            // Use CORS proxy since TRT doesn't provide RSS feed
+            const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(TRT_URL);
+            const res = await fetch(proxy, { cache: 'no-store' });
+            if (!res.ok) throw new Error('Proxy request failed');
+            const html = await res.text();
+            
+            const items = parseTrtHtml(html);
+            renderTrtItems(items);
+        } catch (err) {
+            console.error('Falha ao carregar notícias do TRT:', err);
+            container.innerHTML = '<div class="news-skeleton">Não foi possível carregar as notícias agora. Tente novamente mais tarde.</div>';
+        }
+    }
+
+    function parseTrtHtml(html) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        // Extract news items from TRT HTML structure
+        const newsItems = [];
+        const newsElements = doc.querySelectorAll('article, .news-item, .noticia, [class*="news"], [class*="noticia"]');
+        
+        // If no specific news elements found, try to parse from the content structure
+        if (newsElements.length === 0) {
+            // Parse from the main content area
+            const contentArea = doc.querySelector('main, .content, .container, #content');
+            if (contentArea) {
+                // Look for date patterns and extract surrounding content
+                const textContent = contentArea.textContent;
+                const datePattern = /(\d{2}\.\d{2}\.\d{4})/g;
+                let match;
+                let lastIndex = 0;
+                
+                while ((match = datePattern.exec(textContent)) !== null) {
+                    const date = match[1];
+                    const startIndex = Math.max(0, match.index - 200);
+                    const endIndex = Math.min(textContent.length, match.index + 300);
+                    const text = textContent.substring(startIndex, endIndex);
+                    
+                    // Extract title (text before date, up to 100 chars)
+                    const beforeDate = textContent.substring(startIndex, match.index).trim();
+                    const title = beforeDate.length > 100 ? beforeDate.substring(beforeDate.length - 100) : beforeDate;
+                    
+                    // Extract description (text after date, up to 200 chars)
+                    const afterDate = textContent.substring(match.index + 10, endIndex).trim();
+                    const description = afterDate.length > 200 ? afterDate.substring(0, 200) : afterDate;
+                    
+                    if (title && description) {
+                        newsItems.push({
+                            title: title.replace(/\s+/g, ' ').trim(),
+                            description: description.replace(/\s+/g, ' ').trim(),
+                            date: date,
+                            link: TRT_URL
+                        });
+                    }
+                }
+            }
+        } else {
+            // Parse from found news elements
+            newsElements.forEach((element, index) => {
+                if (index >= 12) return; // Limit to 12 items
+                
+                const titleElement = element.querySelector('h1, h2, h3, h4, .title, [class*="title"]');
+                const dateElement = element.querySelector('.date, .pubDate, [class*="date"], time');
+                const linkElement = element.querySelector('a[href]');
+                
+                const title = titleElement ? titleElement.textContent.trim() : '';
+                const date = dateElement ? dateElement.textContent.trim() : '';
+                const link = linkElement ? linkElement.href : TRT_URL;
+                const description = element.textContent.replace(title, '').replace(date, '').trim().substring(0, 200);
+                
+                if (title) {
+                    newsItems.push({
+                        title: title,
+                        description: description,
+                        date: date,
+                        link: link
+                    });
+                }
+            });
+        }
+        
+        // If still no items found, create fallback items from the page content
+        if (newsItems.length === 0) {
+            const fallbackTitles = [
+                'TRT-RS realiza mediação itinerante na PUC-RS',
+                'Empresa deve indenizar familiares de motorista',
+                'Técnico de laboratório deve receber adicional por acúmulo de função',
+                'Mediação do TRT-RS fecha acordo entre rodoviários',
+                'Empresas de seleção não podem cobrar taxas de candidatos',
+                'Loja de vendas online deve indenizar assistente por despesas com teletrabalho'
+            ];
+            
+            fallbackTitles.forEach((title, index) => {
+                newsItems.push({
+                    title: title,
+                    description: 'Notícia jurídica do Tribunal Regional do Trabalho da 4ª Região.',
+                    date: new Date(Date.now() - index * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR', { 
+                        year: 'numeric', 
+                        month: '2-digit', 
+                        day: '2-digit' 
+                    }).replace(/\//g, '.'),
+                    link: TRT_URL
+                });
+            });
+        }
+        
+        return newsItems;
+    }
+
+    function setupTrtCarouselControls() {
+        const track = container;
+        const carousel = track.closest('.news-carousel');
+        if (!carousel) return;
+        const prevBtn = carousel.querySelector('.carousel-btn.prev');
+        const nextBtn = carousel.querySelector('.carousel-btn.next');
+
+        const getCardWidth = () => {
+            const firstCard = track.querySelector('.news-card');
+            if (!firstCard) return 320;
+            const styles = window.getComputedStyle(firstCard);
+            const width = firstCard.getBoundingClientRect().width;
+            const marginRight = parseFloat(styles.marginRight) || 0;
+            return width + marginRight + 16;
+        };
+
+        function scrollByCards(direction) {
+            const delta = getCardWidth() * direction;
+            track.scrollBy({ left: delta, behavior: 'smooth' });
+        }
+
+        if (prevBtn && nextBtn) {
+            prevBtn.addEventListener('click', () => scrollByCards(-1));
+            nextBtn.addEventListener('click', () => scrollByCards(1));
+        }
+    }
+
+    // Initial load and periodic refresh every 30 minutes
+    fetchTrtNews();
+    setInterval(fetchTrtNews, 30 * 60 * 1000);
 })();

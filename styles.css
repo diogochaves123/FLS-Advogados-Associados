@@ -75,7 +75,7 @@ body {
 }
 
 .logo-img {
-    height: 68px;
+    height: 80px;
     width: auto;
 }
 
@@ -849,7 +849,7 @@ body {
 }
 
 .footer-logo-img {
-    height: 75px;
+    height: 85px;
     width: auto;
     margin-bottom: 15px;
 }
@@ -1006,6 +1006,16 @@ body {
     border-top: 1px solid #8B4513;
 }
 
+/* TRT News Section - Slight variation for visual distinction */
+.trt-news-section {
+    background-color: rgba(26, 26, 26, 0.92);
+    border-top: 1px solid rgba(139, 69, 19, 0.7);
+}
+
+.trt-news-section h2 {
+    color: #D2B48C;
+}
+
 .news-section h2 {
     text-align: center;
     font-size: 2.2rem;
@@ -1013,11 +1023,48 @@ body {
     margin-bottom: 30px;
 }
 
-.news-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+.news-carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
+
+.news-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 16px;
+    padding: 6px 4px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.news-track::-webkit-scrollbar {
+    height: 8px;
+}
+
+.news-track::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #8B4513, #D2B48C);
+    border-radius: 4px;
+}
+
+.carousel-btn {
+    background: rgba(139, 69, 19, 0.25);
+    color: #D2B48C;
+    border: 1px solid rgba(210,180,140,0.45);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex: 0 0 auto;
+}
+
+.carousel-btn:hover { background: rgba(139, 69, 19, 0.4); }
+
+.news-card { flex: 0 0 calc(33.333% - 8px); scroll-snap-align: start; }
 
 .news-card {
     background: linear-gradient(135deg, rgba(45, 45, 45, 0.9) 0%, rgba(26, 26, 26, 0.95) 100%);
@@ -1029,6 +1076,8 @@ body {
     flex-direction: column;
     gap: 10px;
     transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    min-width: 300px;
+    max-width: 440px;
 }
 
 .news-card:hover {
@@ -1090,11 +1139,11 @@ body {
 }
 
 @media (max-width: 1024px) {
-    .news-grid { grid-template-columns: repeat(2, 1fr); }
+    .news-card { flex-basis: calc(50% - 8px); }
 }
 
 @media (max-width: 640px) {
-    .news-grid { grid-template-columns: 1fr; }
+    .news-card { flex-basis: calc(85%); min-width: 260px; }
 }
 
 @media (max-width: 480px) {
@@ -1698,7 +1747,7 @@ body.loaded .cta-button {
 }
 
 .booking-brand img {
-    height: 40px;
+    height: 70px;
     width: auto;
 }
 
